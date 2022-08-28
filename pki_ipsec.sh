@@ -25,23 +25,23 @@ dns() {
   local i=${r##*[^0-9]}
   test -z "$i" && fail 20 "Unable to guess ip formatting from id: $id"
   cat <<EOF
-10.160.0.$i
-10.160.240.$i
-10.172.0.$i
-fd0a:a0:0:$i::
-fd0a:a0:f0:$i::
-fd0a:b0:$i::
-$r
-$r.slog.home
-$r.home.slog.dk
-$r.backbone.slog.home
-$r.ipsec.slog.home
-$r.bb
-$r.mgmt.slog.home
+ip:10.160.0.$i
+ip:10.160.240.$i
+ip:10.172.0.$i
+ip:fd0a:a0:0:$i::
+ip:fd0a:a0:f0:$i::
+ip:fd0a:b0:$i::
+dns:$r
+dns:$r.slog.home
+dns:$r.home.slog.dk
+dns:$r.backbone.slog.home
+dns:$r.ipsec.slog.home
+dns:$r.bb
+dns:$r.mgmt.slog.home
 EOF
 }
 _extra() {
-  echo "-8" \""$(dns "$@" | tr '\n' ',' | sed -e 's/,$//g')"\"
+  echo "-extSAN" \""$(dns "$@" | tr '\n' ',' | sed -e 's/,$//g')"\"
 }
 
 case $1 in
