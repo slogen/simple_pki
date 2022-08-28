@@ -11,8 +11,15 @@ remote() {
 sign() {
   case $HOSTNAME in
     fw1) sign_locally "$@";;
-    *) remote sign "$@"
+    *) sign_remote "$@"
   esac
+}
+sign_remote() {
+  # workaround piping with ssh and inputting random seed
+  reqfile="cert.request"
+  cat >"$reqfile" \
+   && remote sign "$@" <"$reqfile" \
+   && rm -f "$reqfile"
 }
 fetch_ca() {
   remote export ${CAID} | { sleep 2; import "${CAID}" - "${_CA_TRUST}"; }
@@ -41,7 +48,7 @@ dns:$r.mgmt.slog.home
 EOF
 }
 _extra() {
-  echo "-extSAN" \""$(dns "$@" | tr '\n' ',' | sed -e 's/,$//g')"\"
+  echo "--extSAN" "$(dns "$@" | tr '\n' ',' | sed -e 's/,$//g')"
 }
 
 case $1 in
